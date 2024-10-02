@@ -20,7 +20,8 @@ const upload=multer({storage:storage});
 
 const { addproduct,
     getproduct,
-    
+    getfeaturedproduct,
+    getlatestproduct,
     findproductbyid,
     deleteProductById,
     updateProductById}=require("../controllers/product.controllers");
@@ -34,8 +35,10 @@ const validategetproducts=[query("page").optional().isInt({min:1}).withMessage("
     // ,query("minprice").optional().isInt().withMessage("please give the numeric value"),query("maxprice").optional().isInt()]
    
    
-router.get("/",checkAuth,validategetproducts, validation,getproduct);
+router.get("/",validategetproducts, validation,getproduct);
 router.post("/",checkAuth,upload.single('image'),addproduct);
+router.get("/featured",getfeaturedproduct);
+router.get("/latest",getlatestproduct);
 router.get("/:productid",findproductbyid);
 router.patch("/:productid",checkAuth,validateforupdate,updateProductById);
 router.delete("/:productid",checkAuth,deleteProductById);

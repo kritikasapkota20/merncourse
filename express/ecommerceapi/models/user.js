@@ -7,7 +7,10 @@ const userschema=new mongoose.Schema({
 type:String,
 default:"customer"
     },
-    image:String
-})
+    profileimage:String
+},{
+    timestamps: true,
+  })
+
 const users=mongoose.model("Users",userschema);
 module.exports=users;

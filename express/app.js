@@ -6,9 +6,11 @@ const { query, validationResult } = require("express-validator");
 const connectDb = require("./config/db");
 const authRoutes = require("./routes/auth.routes");
 const productRoutes = require("./routes/product.routes");
+const cors=require("cors");
 
 app.use(express.json());
 app.use(express.static("uploads"));
+app.use(cors());
 
 connectDb();
 

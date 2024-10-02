@@ -4,14 +4,14 @@
   "description": "Api for ecommerce app",
   "main": "main.js",
   "scripts": {
-    "dev":"nodemon main.js",
-
+    "dev": "nodemon main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Kritika sapkota",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
     "express": "^4.19.2",
     "express-async-errors": "^3.1.1",
     "express-validator": "^7.2.0",

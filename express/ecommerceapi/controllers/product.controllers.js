@@ -8,7 +8,9 @@ await Products.create({
     name:req.body.name,
     price:req.body.price,
     user:req.authuser._id,
-    image:req.file.filename
+    image:req.file.filename,
+    featured:req.body.featured,
+    latest:req.body.latest
 
 })
 // console.log(req.file);
@@ -24,7 +26,7 @@ res.status(200).json({
 }
 
 }
-const getproduct=async(req,res,next)=>{
+const getproduct=async(req,res)=>{
 //  const product= await  Products.find();
 const {page=1,limit=5}=req.query;
  
@@ -48,7 +50,7 @@ sortbyfilter.price=req.query.order;
  })
 }
 const findproductbyid=async(req,res)=>{
-  const product=  await Products.findOne({_id:req.params.productid});
+  const product=  await Products.findById(req.params.productid)
     res.status(200).json({
         message:"Product by id fetched successfully",
         data:product
@@ -67,9 +69,27 @@ const updateProductById=async(req,res)=>{
         message:"Product updated succefully"
     })
 }
+const getfeaturedproduct = async (req, res) => {
+    const products = await Products.find({ featured: true }).limit(4);
+    res.status(200).json({
+      message: "Product fetched succesfully.",
+      data: products,
+    });
+  }
+  const getlatestproduct=async(req,res)=>{
+    const products=await Products.find().sort({
+        createdAt:"desc"
+    }).limit(4)
+    res.status(200).json({
+        message:"Latest product fetched successfully.",
+        data:products
+    })
+  }
 module.exports={
     addproduct,
     getproduct,
+    getfeaturedproduct,
+    getlatestproduct,
     findproductbyid,
     deleteProductById,
     updateProductById,

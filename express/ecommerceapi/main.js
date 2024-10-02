@@ -4,8 +4,11 @@ const db=require("./config/db");
 const port=4001;
 const productroute=require("./routes/product.routes");
 const userroute=require("./routes/user.routes")
+const cors=require("cors");
 require("express-async-errors");
 app.use(express.json());
+app.use(cors());
+
 db();
 app.use("/products",productroute);
 app.use("/user",userroute);
