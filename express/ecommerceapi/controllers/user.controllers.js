@@ -7,7 +7,7 @@ const signup=async(req,res)=>{
   const user=  await User.findOne({email:req.body.email});
 if(user){
     res.status(401).json({
-        message:"User already exist"
+        message:"User already exist !"
     })
     return;
 }
@@ -16,10 +16,10 @@ const hashedPassword=bcrypt.hashSync(password,salt);
   await  User.create({
     ...remaining,
     password:hashedPassword,
-    image:req.file.filename
+  
 
   });
-  console.log(req.file.filename)
+  // console.log(req.file.filename)
   // console.log(req.file.filename);
     res.status(200).json({
         message:"Signedup successfully"
@@ -32,19 +32,21 @@ const signin=async(req,res)=>{
   
   if(!isValidPassword){
     res.status(401).json({
-      message:"invalid credentials"
+      message:"Invalid credentials !" 
       
   })
     return;
     
   }
   
-    if(user.role!="Admin"){
-      res.status(200).json({
-        message:"signedin successfully"
-    })
-return;
-  }
+//     if(user.role!="Admin"){
+//       res.status(200).json({
+//         message:"signedin successfully",
+        
+        
+//     })
+// return;
+  // }
 const token=jwt.sign({
   _id:user._id,
   email:user.email,
@@ -57,10 +59,15 @@ const token=jwt.sign({
 }
 
 )
+const expiresAt=new Date();
+expiresAt.setDate(expiresAt.getDate()+10)
 res.status(200).json({
-  message:"signedin successfully",
-  token
-})
+  message:"Signedin successfully",
+  user,
+  token,
+  expiresAt,
+});
+return;
 
 
   
@@ -86,10 +93,10 @@ res.status(200).json({
             updateData.password = bcrypt.hashSync(password, salt);
         }
 
-        // Update the image if a new file is uploaded
-        if (req.file) {
-            updateData.image = req.file.filename;
-        }
+        // // Update the image if a new file is uploaded
+        // if (req.file) {
+        //     updateData.image = req.file.filename;
+        // }
 
         // Update user data
         user = await User.findByIdAndUpdate(userId, updateData, { new: true });
@@ -100,8 +107,13 @@ res.status(200).json({
         });
       }
     
- 
+ const signout=async(req,res)=>{
+  // res.clearCookie("token");
+  res.status(200).json({
+    message:"Logout successfully"
+  })
+ }
 
 module.exports={
-    signup,signin,updateUser
+    signup,signin,updateUser,signout
 }

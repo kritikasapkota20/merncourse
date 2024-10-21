@@ -13,14 +13,41 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import {useNavigate} from "react-router-dom"
-
+import {authcontext} from "../App"
+import { useState,useEffect,useContext } from "react";
+import { useMutation } from '@tanstack/react-query';
+import axios from "axios";
+import { ToastContainer,toast } from 'react-toastify';
 const pages = ['Products', 'Pricing', 'Blog'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
-
+const settings = ['Profile', 'Account', 'Dashboard'];
+import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
+import Badge from '@mui/material/Badge';
 function Navbar() {
-    const navigate=useNavigate()
+const {authUser,setAuthUser,cart}=useContext(authcontext)
+const navigate=useNavigate()
+
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const mutation=useMutation({
+    mutationFn:async()=>{
+      const res=await axios.post("/api/user/signout");
+      // console.log(res);
+   return res.data
+    },
+    onSuccess:(data)=>{
+
+      console.log(data.message);
+toast.success(data.message);
+setAuthUser(data.user)
+localStorage.removeItem("authUser",JSON.stringify(data.user));
+// localStorage.removeItem(`cart_${authUser.email}`, JSON.stringify(newcartitems));
+// setTimeout(() => {
+  navigate("/");
+// }, 100);
+},
+
+
+})
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -36,7 +63,7 @@ function Navbar() {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
-
+// console.log(authUser.name)
   return (
     <AppBar position="static" sx={{mb:2}}>
       <Container maxWidth="xl">
@@ -58,9 +85,10 @@ function Navbar() {
               letterSpacing: '.3rem',
               color: 'inherit',
               textDecoration: 'none',
+              cursor:"pointer"
             }}
           >
-            LOGO
+            Shoply
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
@@ -112,10 +140,11 @@ function Navbar() {
               letterSpacing: '.3rem',
               color: 'inherit',
               textDecoration: 'none',
+              cursor:"pointer"
               
             }}
           >
-            LOGO
+            Shoply
             
           </Typography>
            
@@ -131,10 +160,32 @@ function Navbar() {
               </Button>
            
           </Box>
-          <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
+          <Box sx={{ flexGrow: 20, display: { xs: 'none', md: 'flex' } }}>
+            
+              <Button
+                onClick={()=>{
+                    navigate("/orders")
+                }}
+                sx={{ my: 2, color: 'white', display: 'block' }}
+              >
+                Orders
+              </Button>
+           
+          </Box>
+          <Box sx={{ display:"flex",alignItems:"center"  }}>
+            
+         
+            {authUser?
+            <>     
+             <Badge  badgeContent={cart.length} color="warning"sx ={{mr:10,cursor:"pointer"}} onClick={()=>{
+              navigate("/cart")
+             }}>
+          <AddShoppingCartIcon />
+         </Badge>
+                    <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                <Avatar alt={authUser.name.toUpperCase()} src="/static/images/avatar/2.jpg" />
+              
               </IconButton>
             </Tooltip>
             <Menu
@@ -153,15 +204,45 @@ function Navbar() {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {settings.map((setting) => (
+              {settings.map((setting) =>
+              {
+                // console.log(authUser)
+               if(setting==="Dashboard" && !authUser.role.includes("Admin")){
+                return null;
+               }
+               
+               return (
                 <MenuItem key={setting} onClick={handleCloseUserMenu}>
                   <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
+                </MenuItem>)
+})}
+<MenuItem  onClick={handleCloseUserMenu}>
+                  <Typography sx={{ textAlign: 'center' }} onClick={()=>{
+                   
+                    mutation.mutate();
+                  }}>Logout</Typography>
                 </MenuItem>
-              ))}
             </Menu>
+</>:<>
+            
+            <Button
+              onClick={()=>{
+                  navigate("/sign-in")
+              }}
+              sx={{ my: 2, color: 'white', display: 'block',fontWeight:"bold"}}
+            >
+              Sign In
+            </Button>
+         
+        </>
+        }
+
+      <ToastContainer />
+         
           </Box>
         </Toolbar>
       </Container>
+
     </AppBar>
   );
 }

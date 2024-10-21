@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { BrowserRouter,Route,Routes,Outlet } from "react-router-dom";
 import Stack from '@mui/material/Stack';
 import SignIn from './Pages/Signin';
@@ -8,16 +8,36 @@ import Product from './Pages/product';
 import Navbar from "./components/Navbar"
 import Homelayout from './layout/Homelayout';
 import {QueryClient,QueryClientProvider} from "@tanstack/react-query"
+import {useState,useContext,createContext} from "react";
+import Cart from './Pages/Cart';
+export const authcontext=createContext();
+const queryclient=new QueryClient();
+
 const App = () => {
-  const queryclient=new QueryClient();
+  const [cart, setcart] = useState(() => {
+    // const authUser = JSON.parse(localStorage.getItem("authUser"));
+    // if (authUser) {
+    //   return JSON.parse(localStorage.getItem(`cart_${authUser.email}`)) ?? [];
+    // }
+    return JSON.parse(localStorage.getItem("cart")??[])
+
+  });
+  useEffect(()=>{
+localStorage.setItem("cart",JSON.stringify(cart));
+  },[cart])
+  const [authUser,setAuthUser]=useState(()=>{
+    return JSON.parse(localStorage.getItem("authUser"));
+  })
   return (
     <div>
-      <QueryClientProvider client={queryclient}>
+      <authcontext.Provider value={{authUser,setAuthUser,cart,setcart}}>
+        <QueryClientProvider client={queryclient}>
     <BrowserRouter>
     <Routes>
       <Route element={<Homelayout/>}>
     <Route path='/' element={<Homepage/>}/>
     <Route path='/products' element={<Product/>}/>
+    <Route path='/cart' element={<Cart/>}/>
     </Route>
       <Route path='/sign-in' element={<SignIn/>}/>
       <Route path='/sign-up' element={<SignUp/>}/>
@@ -26,6 +46,8 @@ const App = () => {
     </Routes>
     </BrowserRouter>
     </QueryClientProvider>
+    </authcontext.Provider>
+      
     </div>
   )
 }

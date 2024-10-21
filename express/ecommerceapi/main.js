@@ -10,8 +10,8 @@ app.use(express.json());
 app.use(cors());
 
 db();
-app.use("/products",productroute);
-app.use("/user",userroute);
+app.use("/api/products",productroute);
+app.use("/api/user",userroute);
 app.use(express.static("uploads"));
 
 app.all("*",(req,res)=>{

@@ -17,7 +17,7 @@ const {data,isLoading}=useQuery({
   queryKey:[querykey],
   queryFn:async()=>{
     try{
-    const res=await axios.get(`http://localhost:4001/products/${forl}`)
+    const res=await axios.get(`/api/products/${forl}`)
     console.log(res.data.data);
     return res.data.data
   }catch(error){
@@ -36,16 +36,16 @@ const {data,isLoading}=useQuery({
           {isLoading ?(
             <>
             <Grid size="3">
-            <Skeleton height="400px" width="200px" />
+            <Skeleton height="550px" width="300px" />
           </Grid>
           <Grid size="3">
-            <Skeleton height="400px" width="200px" />
+            <Skeleton height="550px" width="300px" />
           </Grid>
           <Grid size="3">
-            <Skeleton height="400px" width="200px"/>
+            <Skeleton height="550px" width="300px"/>
           </Grid>
           <Grid size="3">
-            <Skeleton height="400px" width="200px" />
+            <Skeleton height="550px" width="300px" />
           </Grid>
             </>
           ):(

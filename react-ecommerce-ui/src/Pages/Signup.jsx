@@ -1,19 +1,27 @@
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import FormLabel from "@mui/material/FormLabel";
 import FormControl from "@mui/material/FormControl";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import Card from "@mui/material/Card";
-import {Link} from "react-router-dom"
+import {Link,useNavigate} from "react-router-dom"
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import Alert from '@mui/material/Alert';
+import {
+  useQuery,
+  useMutation,
+} from '@tanstack/react-query'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import axios from "axios";
 // const passwordRules = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{5,}$/;
 const schema = yup
 .object()
@@ -21,20 +29,51 @@ const schema = yup
   name: yup.string().required("Name is required"),
   email: yup.string().email().required("Email is required"),
   // password: yup.string().matches(passwordRules,{message:"please enter a strong password"}).required("Password is Required"),
-  password: yup.string().matches({message:"please enter a strong password"}).required("Password is Required"),
+  password: yup.string().required("Password is Required"),
 })
 .required();
 export default function SignUp() {
+  const navigate=useNavigate();
+  const mutation=useMutation({
+    mutationFn:async(data)=>{
+      const res=await axios.post("/api/user/signup",data);
+      // console.log(res);
+   return res.data
+    },
+    onSuccess:(data)=>{
+      // console.log(data.message);
+toast.success(data.message);
+setTimeout(() => {
+  navigate("/sign-in");
+}, 1000); 
+// navigate("/sign-in")
+
+    },
+    onError:(err)=>{
+// console.log(err.response.data.message);
+// toast.error(err.response.data.message)
+
+    }
+    
+  })
+  // console.log(mutation.error)
+  
   const [showPassword,setshowpassword]=useState(false);
   const handleclickpassword=()=>setshowpassword((show)=>!show);
-  const { register, handleSubmit,formState:{errors} } = useForm({
+  const { register, handleSubmit,formState:{errors},reset} = useForm({
     resolver: yupResolver(schema),
   });
   const onSubmit = (data) => {
-    console.log("Form Data:", data);  
-  };
+    // console.log("Form Data:", data);  
+  mutation.mutate(data);
 
- 
+  };
+  
+  useEffect(()=>{
+    if(mutation.error){
+reset();
+    }
+  },[mutation.error,reset])
   return (
     <Stack
       sx={{ width: "80%", mx: "auto" }}
@@ -49,6 +88,10 @@ export default function SignUp() {
         >
           Sign up
         </Typography>
+        {mutation.error &&<Alert sx={{my:2}} severity="error">
+ {mutation.error.response.data.message} 
+ </Alert>}
+        
         <Box
           component="form"
           onSubmit={handleSubmit(onSubmit)}
@@ -135,12 +178,13 @@ export default function SignUp() {
           <Typography sx={{ textAlign: "center" }}>
             Already have an account?{" "}
             <span>
-            <Link to="/sign-up" sx={{ color: 'black' }}>Sign in</Link>
+            <Link to="/sign-in" sx={{ color: 'black' }}>Sign in</Link>
 
             </span>
           </Typography>
         </Box>
       </Card>
+      <ToastContainer />
     </Stack>
   );
 }
