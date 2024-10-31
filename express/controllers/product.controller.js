@@ -1,5 +1,6 @@
 const Product = require("../models/product");
 
+
 const getProducts = async (req, res) => {
   console.log(req.authUser);
   try {

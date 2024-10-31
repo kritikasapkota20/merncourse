@@ -23,6 +23,8 @@ const { addproduct,
     getfeaturedproduct,
     getlatestproduct,
     findproductbyid,
+    createOrders,
+    getorders,
     deleteProductById,
     updateProductById}=require("../controllers/product.controllers");
     const productvalidate=[
@@ -39,6 +41,10 @@ router.get("/",validategetproducts, validation,getproduct);
 router.post("/",checkAuth,upload.single('image'),addproduct);
 router.get("/featured",getfeaturedproduct);
 router.get("/latest",getlatestproduct);
+router.post("/order",checkAuth,createOrders);
+router.get("/getorder",checkAuth,getorders);
+
+
 router.get("/:productid",findproductbyid);
 router.patch("/:productid",checkAuth,validateforupdate,updateProductById);
 router.delete("/:productid",checkAuth,deleteProductById);

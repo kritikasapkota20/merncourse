@@ -1,5 +1,7 @@
 const mongoose=require("mongoose");
 const Products=require("../models/product");
+const Orders=require("../models/Orders");
+
 const {query,validationResult}=require("express-validator");
 const validator=require("../middleware/validation.middleware")
 const addproduct=async(req,res,next)=>{
@@ -85,9 +87,45 @@ const getfeaturedproduct = async (req, res) => {
         data:products
     })
   }
+  const createOrders=async(req,res)=>{
+    await Orders.create({
+    user:req.authuser._id,
+    ...req.body,
+    totalPrice:0
+    })
+    res.status(200).json({
+        message:"Order created successfully.",
+
+    })
+  }
+  const getorders=async(req,res)=>{
+    //  const product= await  Products.find();
+    const {page=1,limit=5}=req.query;
+     
+    const filter={
+        user:req.authuser._id
+    };
+    if(req.query.status){
+    filter.price=req.query.status;
+    }
+     const orders=await Orders.find(filter).limit(limit).skip(((page??1)-1)*limit??10)
+     const total=await Orders.countDocuments(filter);
+     res.status(200).json({
+        message:"Product fetched successfully",
+        data:{
+            page,
+            total,
+           data: orders,
+        }
+        
+     })
+    }
+   
 module.exports={
     addproduct,
     getproduct,
+    createOrders,
+    getorders,
     getfeaturedproduct,
     getlatestproduct,
     findproductbyid,

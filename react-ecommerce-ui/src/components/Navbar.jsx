@@ -162,15 +162,16 @@ localStorage.removeItem("authUser",JSON.stringify(data.user));
           </Box>
           <Box sx={{ flexGrow: 20, display: { xs: 'none', md: 'flex' } }}>
             
+            {authUser&&(
               <Button
                 onClick={()=>{
-                    navigate("/orders")
+                    navigate("/order")
                 }}
                 sx={{ my: 2, color: 'white', display: 'block' }}
               >
                 Orders
               </Button>
-           
+           )}
           </Box>
           <Box sx={{ display:"flex",alignItems:"center"  }}>
             

@@ -16,10 +16,14 @@ import Grid from '@mui/material/Grid2';
 import Typography from '@mui/material/Typography';
 import FolderIcon from '@mui/icons-material/Folder';
 import DeleteIcon from '@mui/icons-material/Delete';
+// import { Mutation } from '@tanstack/react-query';
 import { authcontext } from '../App';
+import { useMutation, } from '@tanstack/react-query';
+import {useNavigate, Navigate } from 'react-router-dom';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
-import { Chip } from '@mui/material';
+import { Chip,Button } from '@mui/material';
+import { toast } from 'react-toastify';
 
 function generate(element) {
   return [0, 1, 2].map((value) =>
@@ -35,7 +39,33 @@ const Demo = styled('div')(({ theme }) => ({
 
 export default function Cart() {
  const {cart,setcart}=useContext(authcontext)
+ const navigate=useNavigate();
+ const mutation=useMutation({
+   mutationFn:async(data)=>{
+     const res=await axios.post("/api/products/order",data);
+     // console.log(res);
+  return res.data
+   },
+   onSuccess:(data)=>{
+     // console.log(data.message);
+toast.success(data.message);
+
+
+ navigate("/");
+ 
+// navigate("/sign-in")
+
+   },
+   onError:(err)=>{
+// console.log(err.response.data.message);
+// toast.error(err.response.data.message)
+
+   }
+   
+ })
+ console.log(mutation.error)
  const handledelete=(id)=>{
+  const confirmdelete=window.confirm("Do you really want to delete this item?")
   if(confirmdelete){
 const newcartitems=cart.filter((product)=>!(product._id===id));
 setcart(newcartitems);
@@ -59,14 +89,22 @@ setcart([...cart])
   
   setcart([...cart])
    }
+   const handleOrders=()=>{
+    const products=cart.map(({_id,quantity})=>({
+      product:_id,
+      quantity
+    }))
+    mutation.mutate({products
+    })
+   }
    const total=cart.reduce((acc,curr)=>{
     return acc + (curr.quantity*curr.price)
    },0)
   return (
-      
-        <Grid item xs={12} md={6}>
+    <>
+     { (cart.length!==0)?(<Grid item xs={12} md={6}>
           <Typography sx={{ mt: 4, mb: 2 }} variant="h6" component="div">
-            Avatar with text and icon
+            Your Items in cart:
           </Typography>
           <Demo>
             <List >
@@ -100,14 +138,30 @@ setcart([...cart])
                   </ListItemAvatar>
                   <ListItemText
                     primary={product.name}
-                    secondary={`Rs ${product.price}`}
+                    secondary={`${product.quantity} X Rs ${product.price}  =Rs ${product.price*product.quantity}`}
                   />
                 </ListItem>)
               })}
               <Typography sx={{ml:2}}><b>Total :</b>Rs {total}</Typography>
+              <Button 
+            variant="contained" 
+            color="primary" 
+            sx={{ mt: 2, ml: 2 }} 
+            disabled={cart.length===0}
+            onClick={()=>{
+              handleOrders()
+            }}
+          >
+            Proceed to Payment
+          </Button>
             </List>
           </Demo>
-        </Grid>
-   
+        </Grid>):
+         <Typography sx={{my:20}} ><b>There is no items in the cart</b></Typography>
+        }
+
+
+        
+   </>
   );
 }
