@@ -28,7 +28,9 @@ const App = () => {
     // if (authUser) {
     //   return JSON.parse(localStorage.getItem(`cart_${authUser.email}`)) ?? [];
     // }
-    return JSON.parse(localStorage.getItem("cart")??[])
+   const storedcart= localStorage.getItem("cart")
+
+    return storedcart? JSON.parse(storedcart):[];
 
   });
   useEffect(()=>{

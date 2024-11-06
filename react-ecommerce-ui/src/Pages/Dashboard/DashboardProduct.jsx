@@ -8,6 +8,12 @@ import Paper from "@mui/material/Paper";
 import Skeleton from "@mui/material/Skeleton";
 import axios from "axios";
 import TablePagination from '@mui/material/TablePagination';
+import TextField from '@mui/material/TextField';
+import Search from '@mui/icons-material/Search';
+import { FormControl } from "@mui/material";
+import {InputLabel} from "@mui/material";
+import Input from '@mui/material/Input';
+import InputAdornment from '@mui/material/InputAdornment';
 
 import { useQuery } from "@tanstack/react-query";
 import Chip from "@mui/material/Chip";
@@ -24,6 +30,7 @@ const STATUS_COLOR = {
 export default function DashboardProduct() {
   const [page, setPage] = React.useState(1);
   const [rowsPerPage, setRowsPerPage] = React.useState(4);
+  const [search,setsearch]=useState("");
 
 
   const handleChangePage = (event, newPage) => {
@@ -38,14 +45,15 @@ export default function DashboardProduct() {
 
   const {data ,isLoading}=useQuery({
     queryKey:["product",
-    ,{page,rowsPerPage}],
+    ,{page,rowsPerPage,search}],
     queryFn:async()=>{
      try{ const res=await axios.get("/api/products"
         ,{
         params:{
           
           page,
-          limit:rowsPerPage
+          limit:rowsPerPage,
+          search
         }
   
       }
@@ -62,6 +70,24 @@ export default function DashboardProduct() {
 
   return (
     <TableContainer component={Paper}>
+     <FormControl variant="standard"
+      sx={{display:"flex",justifyContent:"flex-end", mb:5}} 
+      >
+        <InputLabel  htmlFor="input-with-icon-adornment" sx={{my:3,mx:5,fontSize:20}}>
+          Search Products
+        </InputLabel>
+        <Input  onChange={(e)=>{
+          setsearch(e.target.value)
+        }}
+          id="input-with-icon-adornment"
+          value={search}
+          startAdornment={
+            <InputAdornment position="start" sx={{mx:1}}>
+              <Search />
+            </InputAdornment>
+          }
+        />
+      </FormControl>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
         <TableHead>
           <TableRow>
@@ -102,9 +128,11 @@ export default function DashboardProduct() {
                 <TableCell component="th" scope="row">
                   {index + 1}
                 </TableCell>
-                <TableCell><Avatar src={image} alt={name}/></TableCell>
+                <TableCell>
+                  <Avatar src={` http://localhost:4001/${image}`} alt={name}/>
+                  </TableCell>
                 <TableCell>{name}</TableCell>
-                <TableCell>{price}</TableCell>
+                <TableCell>Rs {price}</TableCell>
 
               </TableRow>
             ))

@@ -19,6 +19,7 @@ const {authUser,setAuthUser,cart,setcart}=useContext(authcontext)
         // image="https://5.imimg.com/data5/SELLER/Default/2022/11/KE/VX/MV/116453489/white-casual-shoes-for-men-500x500.jpg"
         image={` http://localhost:4001/${product?.image}`}
 
+
         // image={`/api/${product?.image}`}
 
 
