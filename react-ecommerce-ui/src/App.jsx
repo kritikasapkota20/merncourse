@@ -15,6 +15,10 @@ import Cart from './Pages/Cart';
 import  Dashboard  from './Pages/Dashboard';
 import Dashboardlayout from "./layout/Dashboardlayout"
 import DashboardProduct from "./Pages/Dashboard/DashboardProduct"
+import DashboardUser from "./Pages/Dashboard/DashboardUser"
+import Productform from './Pages/Dashboard/Productform';
+
+
 export const authcontext=createContext();
 const queryclient=new QueryClient();
 export const ProtectedRoutes=()=>{
@@ -60,6 +64,12 @@ localStorage.setItem("cart",JSON.stringify(cart));
       <Route element={<Dashboardlayout/>}>
 
       <Route path='/Dashboard/products' element={<DashboardProduct/>}/>
+      <Route path='/Dashboard/products/add' element={<Productform/>}/>
+      <Route path='/Dashboard/products/edit/:productId' element={<Productform/>}/>
+
+      <Route path='/Dashboard/users' element={<DashboardUser/>}/>
+
+
 
       </Route>
 

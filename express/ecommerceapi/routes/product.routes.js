@@ -1,6 +1,6 @@
 const express=require("express");
 const jwt=require("jsonwebtoken");
-const  checkAuth  = require("../middleware/checkAuth.middleware");
+const  {checkAuth,checkAuthAdmin}  = require("../middleware/checkAuth.middleware");
 const router=express.Router();
 const {body,param,query}=require("express-validator");
 const validation=require("../middleware/validation.middleware");
@@ -46,6 +46,9 @@ router.get("/getorder",checkAuth,getorders);
 
 
 router.get("/:productid",findproductbyid);
-router.patch("/:productid",checkAuth,validateforupdate,updateProductById);
-router.delete("/:productid",checkAuth,deleteProductById);
+router.patch("/:productid",checkAuthAdmin,
+    upload.single("image"),updateProductById);
+// router.patch("/:productid",checkAuth,updateProductById);
+
+router.delete("/:productid",checkAuthAdmin,deleteProductById);
 module.exports=router;

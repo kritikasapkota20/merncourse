@@ -65,7 +65,7 @@ toast.success(data.message);
  })
  console.log(mutation.error)
  const handledelete=(id)=>{
-  const confirmdelete=window.confirm("Do you really want to delete this item?")
+  const confirmdelete=window.confirm("Do you really want to delete this item from cart?")
   if(confirmdelete){
 const newcartitems=cart.filter((product)=>!(product._id===id));
 setcart(newcartitems);

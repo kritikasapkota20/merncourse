@@ -1,7 +1,15 @@
+import { connectdb } from "@/lib/db";
+import  {Post} from "@/models/Post";
+import { redirect } from "next/navigation";
 export default function addblog(){
-    const createPost=async()=>{
-        "use server"
-        // const Post=new P
+    const createPost=async(formData:FormData)=>{
+        "use server";
+        await connectdb();
+const title=formData.get('title');
+const content=formData.get('content');
+        const post=new Post({title,content});
+        await post.save();
+        redirect("/");
     }
     return( <div className="container mx-auto p-8">
     <h1 className="text-3xl font-bold mb-6">Add New Blog</h1>

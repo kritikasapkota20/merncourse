@@ -27,6 +27,11 @@ const hashedPassword=bcrypt.hashSync(password,salt);
 }
 const signin=async(req,res)=>{
   const user=  await User.findOne({email:req.body.email});
+  if(!user){
+    return res.status(401).json({
+      message: "Invalid credentials!",
+    });
+  }
   const isValidPassword=bcrypt.compareSync(req.body.password,user.password);
   
   
@@ -51,7 +56,8 @@ const token=jwt.sign({
   _id:user._id,
   email:user.email,
   name:user.name,
-  role:user.role
+  role:user.role,
+  image:user.profileimage
 
 },JWT_SECRET_KEY,
 {
@@ -61,6 +67,12 @@ const token=jwt.sign({
 )
 const expiresAt=new Date();
 expiresAt.setDate(expiresAt.getDate()+10)
+res.cookie("token", token, {
+  httpOnly: true,
+  expires: expiresAt,
+});
+// console.log(token);
+// console.log(user.profileimage)
 res.status(200).json({
   message:"Signedin successfully",
   user,
@@ -74,6 +86,31 @@ return;
    
     
   }
+  const getUser=async(req,res)=>{
+    const {page=1,limit=5}=req.query;
+ 
+const sortbyfilter={};
+
+ const user=await User.find({
+    name:new RegExp(req.query.search),
+    // price:{$gte:req.query.minprice,$lte:req.query.maxprice}
+ }).sort(sortbyfilter).limit(limit).skip(((page??1)-1)*limit??10)
+ const total=await User.countDocuments();
+ res.status(200).json({
+    message:"Product fetched successfully",
+    data:{
+        page,
+        total,
+       data: user,
+    }
+    
+ })
+}
+
+    // console.log(user);
+
+    
+  
   const updateUser = async (req, res) => {
     const { password, ...updateData } = req.body;
     const userId = req.params.id;
@@ -106,14 +143,20 @@ return;
             user
         });
       }
+      const deleteUserById=async(req,res)=>{
+        await User.deleteOne({_id:req.params.userId});
+        res.status(200).json({
+            message:"user deleted successfully"
+        })
+    }
     
  const signout=async(req,res)=>{
-  // res.clearCookie("token");
+  res.clearCookie("token");
   res.status(200).json({
     message:"Logout successfully"
   })
  }
 
 module.exports={
-    signup,signin,updateUser,signout
+    signup,signin,updateUser,signout,getUser,deleteUserById
 }

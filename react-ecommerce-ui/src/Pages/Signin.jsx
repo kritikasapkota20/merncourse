@@ -61,7 +61,7 @@ setTimeout(() => {
     }
     
   })
-  console.log(mutation.error)
+  // console.log(mutation.error)
   
   const [showPassword,setshowpassword]=useState(false);
   const handleclickpassword=()=>setshowpassword((show)=>!show);
@@ -95,6 +95,7 @@ reset();
         </Typography>
         {mutation.error &&<Alert sx={{my:2}} severity="error">
  {mutation.error.response.data.message} 
+ {/* {console.log(mutation.error.response.data.message)} */}
  </Alert>}
         
         <Box

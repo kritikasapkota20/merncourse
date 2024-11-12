@@ -1,6 +1,6 @@
 const express=require("express");
 const router=express.Router();
-const {signup,signin,updateUser,signout}=require("../controllers/user.controllers");
+const {signup,signin,updateUser,signout,getUser,deleteUserById}=require("../controllers/user.controllers");
 const {body}=require("express-validator")
 // const validate=require("../middleware/validation.middleware");
 const multer=require('multer');
@@ -21,6 +21,10 @@ router.post("/signup",upload.single('image'),signup);
 router.post("/signin",signin);
 router.post("/signout",signout);
 router.patch("/updateuser",updateUser);
+router.get("/",getUser);
+router.delete("/:userId",deleteUserById);
+
+
 module.exports=router;
 // .notEmpty,body("email").notEmpty(),body("password").notEmpty().isStrongPassword(),validate,body("name")
     // "dev": "nodemon --env-file=.env main.js",

@@ -9,7 +9,7 @@ try{
 await Products.create({
     name:req.body.name,
     price:req.body.price,
-    user:req.authuser._id,
+    user:req.authUser._id,
     image:req.file.filename,
     featured:req.body.featured,
     latest:req.body.latest
@@ -37,7 +37,7 @@ if(req.query.order){
 sortbyfilter.price=req.query.order;
 }
  const product=await Products.find({
-    name:new RegExp(req.query.search),
+    name:new RegExp(req.query.search,"i"),
     // price:{$gte:req.query.minprice,$lte:req.query.maxprice}
  }).sort(sortbyfilter).limit(limit).skip(((page??1)-1)*limit??10)
  const total=await Products.countDocuments();
@@ -64,13 +64,42 @@ const deleteProductById=async(req,res)=>{
         message:"Product deleted successfully"
     })
 }
-const updateProductById=async(req,res)=>{
-    const id=req.params.id;
-    await Products.updateOne({_id:req.params.productid},req.body);
+// const updateProductById = async (req, res) => {
+
+// const id = req.params.productid;
+// await Products.updateOne(
+//   { _id: id },
+//   { ...req.body, image: req.file.filename }
+// );
+// res.status(200).json({
+//   message: "Product updated succesfully.",
+// });
+// };
+const updateProductById = async (req, res) => {
+    const id = req.params.productid;
+  const existingproduct=await Products.findById(id);
+
+  
+    const updatedData = { ...req.body,
+        image:req.file?req.file.filename:existingproduct.image,
+     };
+  
+   
+    // if (req.file) {
+    //   updatedData.image = req.file.filename;
+    // }
+  
+    
+    await Products.updateOne(
+      { _id: id },
+      updatedData
+    );
+  
     res.status(200).json({
-        message:"Product updated succefully"
-    })
-}
+      message: "Product updated successfully.",
+    });
+  };
+  
 const getfeaturedproduct = async (req, res) => {
     const products = await Products.find({ featured: true }).limit(4);
     res.status(200).json({
@@ -89,7 +118,7 @@ const getfeaturedproduct = async (req, res) => {
   }
   const createOrders=async(req,res)=>{
     await Orders.create({
-    user:req.authuser._id,
+    user:req.authUser._id,
     ...req.body,
     totalPrice:0
     })

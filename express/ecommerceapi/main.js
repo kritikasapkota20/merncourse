@@ -2,12 +2,14 @@ const express=require("express");
 const app=express();
 const db=require("./config/db");
 const port=4001;
+const cookieParser = require("cookie-parser");
 const productroute=require("./routes/product.routes");
 const userroute=require("./routes/user.routes")
 const cors=require("cors");
 require("express-async-errors");
 app.use(express.json());
 app.use(cors());
+app.use(cookieParser());
 
 db();
 app.use("/api/products",productroute);
