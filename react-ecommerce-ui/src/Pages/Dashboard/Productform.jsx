@@ -317,10 +317,7 @@ export default function ProductForm() {
             gap: 2,
           }}
         >
-          <FormControl>
-            <FormLabel htmlFor="name">Image</FormLabel>
-            <input type="file" {...register("image")} />
-          </FormControl>
+         
           <FormControl>
             <FormLabel htmlFor="name">Name</FormLabel>
             <TextField
@@ -354,7 +351,10 @@ export default function ProductForm() {
               {...register("price")}
             />
           </FormControl>
-
+          <FormControl>
+            <FormLabel htmlFor="name">Image</FormLabel>
+            <input type="file" {...register("image")} />
+          </FormControl>
           <Button type="submit" fullWidth variant="contained">
             {action} Product
           </Button>
